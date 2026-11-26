@@ -11,12 +11,20 @@ no clock: every run writes the same single line to
 # it pays rent now, which is a fresher angle than who-wrote-this.
 import os
 
+# The entry line lives at module level so the content is separate
+# from the file-writing logic below.
+ENTRY_LINE = (
+    "// This function has been \"temporary\" since 2019. "
+    "It now pays rent, has a family, and outlived three rewrites."
+)
+
 
 def write_entry():
-    line = (
-        "// This function has been \"temporary\" since 2019. "
-        "It now pays rent, has a family, and outlived three rewrites."
-    )
+    line = ENTRY_LINE
+    # Guard the bounty gate (1-200 characters) before writing, so a
+    # future edit to the line fails loudly instead of silently.
+    if not 1 <= len(line) <= 200:
+        raise ValueError("entry line must be 1-200 characters")
     folder = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(folder, exist_ok=True)
     with open(os.path.join(folder, "entry.txt"), "w", encoding="utf-8") as fh:
